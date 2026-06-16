@@ -5,9 +5,16 @@
   "version": "0.1.0",
   "publisher": "aerrami",
   "engines": { "vscode": "^1.85.0" },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aerrami/algoviz.git",
+    "directory": "cursor-extension"
+  },
+  "homepage": "https://github.com/aerrami/algoviz/tree/main/cursor-extension",
+  "bugs": { "url": "https://github.com/aerrami/algoviz/issues" },
+  "license": "MIT",
   "categories": ["Education", "Debuggers", "Other"],
   "keywords": ["algorithm", "visualizer", "debugger", "python", "AI", "claude", "cursor"],
-  "icon": "media/icon.png",
   "activationEvents": ["onLanguage:python"],
   "main": "./out/extension.js",
   "contributes": {
