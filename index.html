@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sliding Window Debugger — Longest Substring Without Repeating Characters</title>
+<style>
+  :root{
+    --bg:#fbfaf7; --surface:#ffffff; --surface-2:#f1efe8;
+    --text:#2c2c2a; --text-2:#5f5e5a; --text-3:#959388;
+    --border:rgba(0,0,0,0.12); --border-2:rgba(0,0,0,0.22);
+    --info-bg:#e6f1fb; --info-fg:#0c447c; --info-border:#378add;
+    --danger-bg:#fcebeb; --danger-fg:#791f1f; --danger-border:#e24b4a;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --radius:8px; --radius-lg:12px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#1d1d1b; --surface:#26262420; --surface-2:#2c2c2a;
+      --text:#ecebe6; --text-2:#b4b2a9; --text-3:#888780;
+      --border:rgba(255,255,255,0.14); --border-2:rgba(255,255,255,0.24);
+      --info-bg:#0c447c40; --info-fg:#b5d4f4; --info-border:#378add;
+      --danger-bg:#791f1f40; --danger-fg:#f7c1c1; --danger-border:#e24b4a;
+    }
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--text); font-family:var(--sans); line-height:1.6;
+    -webkit-font-smoothing:antialiased; padding:2rem 1rem;}
+  .wrap{max-width:720px; margin:0 auto;}
+  h1{font-size:20px; font-weight:500; margin:0 0 4px;}
+  .sub{font-size:14px; color:var(--text-2); margin:0 0 1.75rem;}
+  .row{display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
+  label{font-size:13px; color:var(--text-2);}
+  input[type=text]{font-family:var(--mono); letter-spacing:2px; width:170px; height:36px;
+    padding:0 10px; border:0.5px solid var(--border-2); border-radius:var(--radius);
+    background:var(--surface); color:var(--text); font-size:14px;}
+  input[type=text]:focus{outline:none; box-shadow:0 0 0 2px var(--info-border);}
+  button{font-family:var(--sans); font-size:14px; height:36px; padding:0 14px; cursor:pointer;
+    background:transparent; color:var(--text); border:0.5px solid var(--border-2);
+    border-radius:var(--radius); transition:background .12s,transform .06s;}
+  button:hover{background:var(--surface-2);}
+  button:active{transform:scale(.98);}
+  .panel{background:var(--surface-2); border:0.5px solid var(--border); border-radius:var(--radius-lg);}
+  #code{padding:.75rem 0; margin:1.25rem 0; overflow:hidden;}
+  .ln{display:flex; align-items:center; font-family:var(--mono); font-size:13px; line-height:1.6;
+    padding:1px 12px; white-space:pre; transition:background .12s;}
+  .cur{display:inline-block; width:14px; color:var(--info-fg); font-weight:700;}
+  .gut{display:inline-block; width:22px; text-align:right; margin-right:12px; color:var(--text-3);}
+  .src{color:var(--text);}
+  #cells{display:flex; gap:6px; flex-wrap:wrap; min-height:78px; margin:1.25rem 0;}
+  .cell{display:flex; flex-direction:column; align-items:center; gap:4px; width:40px;}
+  .cnum{font-size:11px; color:var(--text-3); font-family:var(--mono);}
+  .box{width:40px; height:44px; display:flex; align-items:center; justify-content:center;
+    font-size:18px; font-weight:500; font-family:var(--mono); border-radius:var(--radius);
+    background:var(--surface-2); color:var(--text-2); border:0.5px solid var(--border);}
+  .box.win{background:var(--info-bg); color:var(--info-fg); border:0.5px solid var(--info-border);}
+  .box.cur{border:2px solid var(--info-border);}
+  .box.gone{background:var(--danger-bg); color:var(--danger-fg); border:0.5px solid var(--danger-border);}
+  .ptr{font-size:12px; font-weight:500; height:16px; color:var(--info-fg); font-family:var(--mono);}
+  .metrics{display:grid; grid-template-columns:repeat(auto-fit,minmax(90px,1fr)); gap:12px; margin:1.25rem 0;}
+  .metric{background:var(--surface-2); border-radius:var(--radius); padding:.75rem 1rem;}
+  .metric .lab{font-size:12px; color:var(--text-2);}
+  .metric .val{font-size:24px; font-weight:500; font-family:var(--mono);}
+  .metric.best{background:var(--info-bg);} .metric.best .lab,.metric.best .val{color:var(--info-fg);}
+  .caption{font-size:13px; color:var(--text-2); margin-bottom:6px;}
+  #countmap{display:flex; gap:6px; flex-wrap:wrap; min-height:34px; margin-bottom:1.25rem;}
+  .pill{font-size:13px; font-family:var(--mono); padding:4px 10px; border-radius:var(--radius);
+    background:var(--surface-2); color:var(--text); border:0.5px solid var(--border);}
+  .pill.dup{background:var(--danger-bg); color:var(--danger-fg); border:0.5px solid var(--danger-border);}
+  #desc{background:var(--surface-2); border-radius:var(--radius); padding:.85rem 1rem; font-size:14px;
+    min-height:48px; margin-bottom:1rem;}
+  #desc code{font-family:var(--mono); font-size:13px; background:var(--surface); padding:1px 5px;
+    border-radius:4px; border:0.5px solid var(--border);}
+  .counter{font-size:13px; color:var(--text-3); margin-left:4px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Sliding window debugger</h1>
+  <p class="sub">Longest substring without repeating characters — step through with a debug cursor on the executing line.</p>
+
+  <div class="row">
+    <label for="str">String</label>
+    <input id="str" type="text" value="abcabcbb" maxlength="20" spellcheck="false" />
+    <button id="load">Load</button>
+  </div>
+
+  <div id="code" class="panel"></div>
+
+  <div id="cells"></div>
+
+  <div class="metrics">
+    <div class="metric"><div class="lab">left</div><div class="val" id="m-left">0</div></div>
+    <div class="metric"><div class="lab">right</div><div class="val" id="m-right">0</div></div>
+    <div class="metric"><div class="lab">window len</div><div class="val" id="m-len">1</div></div>
+    <div class="metric best"><div class="lab">best</div><div class="val" id="m-best">0</div></div>
+  </div>
+
+  <div class="caption">count map</div>
+  <div id="countmap"></div>
+
+  <div id="desc"></div>
+
+  <div class="row">
+    <button id="prev">◀ Prev</button>
+    <button id="play">▶ Play</button>
+    <button id="next">Next ▶</button>
+    <button id="reset">⟳ Reset</button>
+    <span class="counter" id="counter"></span>
+  </div>
+</div>
+
+<script>
+(function(){
+  var s = "abcabcbb", frames = [], idx = 0, timer = null;
+
+  var CODE = [
+    "def lengthOfLongestSubstring(s: str) -> int:",
+    "    count = {}",
+    "    left = 0",
+    "    best = 0",
+    "    for right, ch in enumerate(s):",
+    "        count[ch] = count.get(ch, 0) + 1",
+    "        while count[ch] > 1:        # invalid \u2192 shrink",
+    "            count[s[left]] -= 1",
+    "            left += 1",
+    "        best = max(best, right - left + 1)",
+    "    return best"
+  ];
+
+  function renderCode(){
+    var c = document.getElementById('code'); c.innerHTML = '';
+    for (var i = 0; i < CODE.length; i++){
+      var row = document.createElement('div'); row.className = 'ln'; row.id = 'ln'+(i+1);
+      var a = document.createElement('span'); a.className = 'cur'; a.textContent = '\u00a0';
+      var g = document.createElement('span'); g.className = 'gut'; g.textContent = (i+1);
+      var src = document.createElement('span'); src.className = 'src'; src.textContent = CODE[i];
+      row.appendChild(a); row.appendChild(g); row.appendChild(src); c.appendChild(row);
+    }
+  }
+
+  function setCursor(primary, active){
+    for (var i = 1; i <= CODE.length; i++){
+      var row = document.getElementById('ln'+i), arrow = row.querySelector('.cur');
+      if (i === primary){ row.style.background='var(--info-bg)'; row.style.boxShadow='inset 3px 0 0 var(--info-border)'; row.style.opacity='1'; arrow.textContent='\u25b6'; }
+      else if (active.indexOf(i) !== -1){ row.style.background='var(--info-bg)'; row.style.boxShadow='none'; row.style.opacity='.55'; arrow.textContent='\u00a0'; }
+      else { row.style.background='transparent'; row.style.boxShadow='none'; row.style.opacity='1'; arrow.textContent='\u00a0'; }
+    }
+  }
+
+  function build(str){
+    var f = [], count = {}, left = 0, best = 0;
+    for (var right = 0; right < str.length; right++){
+      var ch = str[right];
+      count[ch] = (count[ch]||0) + 1;
+      f.push({left:left,right:right,removed:null,count:Object.assign({},count),best:best,phase:'add',primary:6,active:[5,6],
+        desc:"Expand: add <code>'"+ch+"'</code> at index "+right+". <code>count['"+ch+"'] = "+count[ch]+"</code>."});
+      while (count[ch] > 1){
+        var rem = str[left]; count[str[left]] -= 1; left += 1;
+        f.push({left:left,right:right,removed:left-1,count:Object.assign({},count),best:best,phase:'shrink',primary:9,active:[7,8,9],
+          desc:"Condition <code>count['"+ch+"'] &gt; 1</code> is true \u2192 shrink. Remove <code>'"+rem+"'</code>, <code>left \u2192 "+left+"</code>."});
+      }
+      var len = right - left + 1; best = Math.max(best, len);
+      f.push({left:left,right:right,removed:null,count:Object.assign({},count),best:best,phase:'best',primary:10,active:[7,10],
+        desc:"While exits (no duplicate). Valid window <code>["+left+", "+right+"]</code> len "+len+". <code>best = "+best+"</code>."});
+    }
+    f.push({left:left,right:str.length-1,removed:null,count:Object.assign({},count),best:best,phase:'done',primary:11,active:[5,11],
+      desc:"Loop finished. <code>return "+best+"</code> \u2014 the answer."});
+    return f;
+  }
+
+  function esc(c){ return c === ' ' ? '\u2423' : c; }
+
+  function render(){
+    var fr = frames[idx];
+    setCursor(fr.primary, fr.active);
+    var cells = document.getElementById('cells'); cells.innerHTML = '';
+    for (var i = 0; i < s.length; i++){
+      var inWin = i >= fr.left && i <= fr.right;
+      var isRight = i === fr.right && fr.phase !== 'done';
+      var isGone = fr.removed === i;
+      var col = document.createElement('div'); col.className = 'cell';
+      var num = document.createElement('div'); num.className = 'cnum'; num.textContent = i;
+      var box = document.createElement('div'); box.className = 'box'; box.textContent = esc(s[i]);
+      if (isGone) box.classList.add('gone'); else if (inWin) box.classList.add('win');
+      if (isRight) box.classList.add('cur');
+      var ptr = document.createElement('div'); ptr.className = 'ptr';
+      ptr.textContent = (i===fr.left&&i===fr.right)?'L R':(i===fr.left)?'L':(i===fr.right)?'R':'';
+      col.appendChild(num); col.appendChild(box); col.appendChild(ptr); cells.appendChild(col);
+    }
+    document.getElementById('m-left').textContent = fr.left;
+    document.getElementById('m-right').textContent = fr.phase==='done' ? '\u2014' : fr.right;
+    document.getElementById('m-len').textContent = fr.phase==='done' ? '\u2014' : (fr.right - fr.left + 1);
+    document.getElementById('m-best').textContent = fr.best;
+    document.getElementById('desc').innerHTML = fr.desc;
+    document.getElementById('counter').textContent = 'step ' + (idx+1) + ' / ' + frames.length;
+    var cm = document.getElementById('countmap'); cm.innerHTML = '';
+    var keys = Object.keys(fr.count);
+    if (!keys.length) cm.innerHTML = '<span style="font-size:13px;color:var(--text-3);">empty</span>';
+    keys.forEach(function(k){
+      var v = fr.count[k]; var pill = document.createElement('div');
+      pill.className = 'pill' + (v>1?' dup':''); pill.textContent = "'"+esc(k)+"' : "+v; cm.appendChild(pill);
+    });
+  }
+
+  function stop(){ if(timer){ clearInterval(timer); timer=null; document.getElementById('play').textContent='▶ Play'; } }
+  function go(n){ idx = Math.max(0, Math.min(frames.length-1, n)); render(); if(idx===frames.length-1) stop(); }
+
+  document.getElementById('next').onclick = function(){ stop(); go(idx+1); };
+  document.getElementById('prev').onclick = function(){ stop(); go(idx-1); };
+  document.getElementById('reset').onclick = function(){ stop(); go(0); };
+  document.getElementById('play').onclick = function(){
+    if (timer){ stop(); return; }
+    if (idx === frames.length-1) idx = 0;
+    document.getElementById('play').textContent='❚❚ Pause';
+    timer = setInterval(function(){ if(idx>=frames.length-1){ go(idx); } else { go(idx+1); } }, 850);
+  };
+  document.getElementById('load').onclick = function(){
+    stop(); var v = document.getElementById('str').value; if(!v.length) return;
+    s = v; frames = build(s); idx = 0; render();
+  };
+  document.getElementById('str').addEventListener('keydown', function(e){ if(e.key==='Enter') document.getElementById('load').click(); });
+
+  renderCode(); frames = build(s); render();
+})();
+</script>
+</body>
+</html>
