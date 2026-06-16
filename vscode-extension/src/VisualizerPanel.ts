@@ -61,12 +61,15 @@ export class VisualizerPanel {
   private constructor(panel: vscode.WebviewPanel) {
     this._panel = panel;
 
-    // Decoration: left-border highlight on the synced source line
+    // Decoration: left-border highlight on the synced source line.
+    // VS Code's DecorationRenderOptions doesn't expose borderLeft directly,
+    // so use the shorthand: zero-width border on three sides + 3px on the left.
     this._lineDecoration = vscode.window.createTextEditorDecorationType({
       isWholeLine: true,
       backgroundColor: new vscode.ThemeColor('editor.findMatchHighlightBackground'),
-      borderLeft: '3px solid',
-      borderLeftColor: new vscode.ThemeColor('focusBorder'),
+      borderStyle: 'solid',
+      borderWidth: '0 0 0 3px',
+      borderColor: new vscode.ThemeColor('focusBorder'),
       after: {
         contentText: '  ◀ current step',
         color: new vscode.ThemeColor('editorCodeLens.foreground'),
