@@ -1,0 +1,113 @@
+{
+  "name": "algo-visualizer",
+  "displayName": "Algorithm Visualizer",
+  "description": "AI-powered step-by-step algorithm visualizer. Select Python code → instant interactive debugger in a side panel.",
+  "version": "0.1.0",
+  "publisher": "your-publisher-id",
+  "engines": { "vscode": "^1.85.0" },
+  "categories": ["Education", "Debuggers", "Other"],
+  "keywords": ["algorithm", "visualizer", "debugger", "python", "AI", "claude"],
+  "icon": "media/icon.png",
+  "activationEvents": ["onLanguage:python"],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "algoViz.visualize",
+        "title": "Visualize Algorithm",
+        "category": "Algorithm Visualizer",
+        "icon": "$(graph-line)"
+      },
+      {
+        "command": "algoViz.visualizeWithHint",
+        "title": "Visualize Algorithm with Hint…",
+        "category": "Algorithm Visualizer",
+        "icon": "$(edit)"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "algoViz.visualize",
+        "key": "ctrl+shift+alt+v",
+        "mac": "cmd+shift+alt+v",
+        "when": "editorTextFocus && editorLangId == python"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "submenu": "algoViz.submenu",
+          "group": "navigation@99",
+          "when": "editorLangId == python"
+        }
+      ],
+      "algoViz.submenu": [
+        {
+          "command": "algoViz.visualize",
+          "group": "1_viz@1"
+        },
+        {
+          "command": "algoViz.visualizeWithHint",
+          "group": "1_viz@2"
+        }
+      ]
+    },
+    "submenus": [
+      {
+        "id": "algoViz.submenu",
+        "label": "Algorithm Visualizer"
+      }
+    ],
+    "configuration": {
+      "title": "Algorithm Visualizer",
+      "properties": {
+        "algoViz.apiKey": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Your Anthropic Claude API key. Get one at [console.anthropic.com](https://console.anthropic.com).",
+          "order": 1
+        },
+        "algoViz.model": {
+          "type": "string",
+          "default": "claude-sonnet-4-6",
+          "enum": [
+            "claude-opus-4-8",
+            "claude-sonnet-4-6",
+            "claude-haiku-4-5-20251001"
+          ],
+          "enumDescriptions": [
+            "Most capable — best visualizations, slower (~30s)",
+            "Balanced — great quality, ~15s (recommended)",
+            "Fastest — simpler output, ~5s"
+          ],
+          "markdownDescription": "Claude model used to generate visualizations.",
+          "order": 2
+        },
+        "algoViz.syncEditorCursor": {
+          "type": "boolean",
+          "default": true,
+          "description": "Highlight the corresponding source line in the editor as you step through the visualization.",
+          "order": 3
+        },
+        "algoViz.autoVisualize": {
+          "type": "boolean",
+          "default": true,
+          "description": "Start generating immediately when the panel opens (no extra click needed).",
+          "order": 4
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.0",
+    "@vscode/vsce": "^2.24.0"
+  }
+}
