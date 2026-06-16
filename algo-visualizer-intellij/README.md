@@ -21,12 +21,31 @@ src/main/
 
 ## Build
 
+### Prerequisites
+
+- **JDK 17+** (IntelliJ Platform 2024.1 requirement; JDK 16 won't work)
+- **Gradle 8.x** _only for the first bootstrap_, to generate the wrapper
+
+Install on Windows (no admin):
+```powershell
+winget install Microsoft.OpenJDK.17
+winget install Gradle.Gradle
+```
+
+### First-time bootstrap
+
+```bash
+gradle wrapper --gradle-version 8.5    # creates gradlew, gradlew.bat, gradle/wrapper/
+```
+
+After that, only `./gradlew` is needed — no global Gradle install required.
+
+### Day-to-day
+
 ```bash
 ./gradlew buildPlugin    # → build/distributions/algo-visualizer-intellij-0.1.0.zip
 ./gradlew runIde         # launch a sandbox IDE with the plugin loaded
 ```
-
-Requires JDK 17. The Gradle wrapper isn't committed yet — run `gradle wrapper --gradle-version 8.5` once to generate it.
 
 ## Settings
 
