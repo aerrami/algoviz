@@ -1,0 +1,45 @@
+<idea-plugin>
+    <id>com.algoviz</id>
+    <name>Algorithm Visualizer</name>
+    <vendor email="support@algoviz.dev" url="https://github.com/aerrami/algoviz">AlgoViz</vendor>
+
+    <description><![CDATA[
+        AI-powered step-by-step algorithm visualizer for Python.
+        Select code in the editor, trigger <b>Visualize Algorithm</b>, and get an
+        interactive debugger in a tool window with bidirectional line-by-line
+        sync back to the editor.
+        <br><br>
+        Requires an Anthropic Claude API key — configure in
+        <b>Settings → Tools → Algorithm Visualizer</b>.
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.python</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <toolWindow
+            id="Algorithm Visualizer"
+            anchor="right"
+            factoryClass="com.algoviz.AlgoVizToolWindowFactory"
+            icon="AllIcons.Toolwindows.ToolWindowFavorites"/>
+
+        <applicationConfigurable
+            parentId="tools"
+            instance="com.algoviz.AlgoVizConfigurable"
+            id="com.algoviz.settings"
+            displayName="Algorithm Visualizer"/>
+    </extensions>
+
+    <actions>
+        <action
+            id="com.algoviz.VisualizeAction"
+            class="com.algoviz.VisualizeAction"
+            text="Visualize Algorithm"
+            description="Generate an interactive visualization of the selected algorithm"
+            icon="AllIcons.Actions.RunAll">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift alt V"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift alt V"/>
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+        </action>
+    </actions>
+</idea-plugin>
