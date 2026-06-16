@@ -1,5 +1,10 @@
 # Algorithm Visualizer — IntelliJ Platform Plugin
 
+> **Status: paused.** This plugin is not currently being developed or maintained.
+> Active work is happening in [`cursor-extension/`](../cursor-extension/) and
+> [`vscode-extension/`](../vscode-extension/). The scaffolded code below is kept
+> in the repo as a starting point for whoever picks the IntelliJ port back up.
+
 Kotlin port of the [VS Code extension](../vscode-extension/) for IntelliJ-based IDEs (IntelliJ IDEA, PyCharm).
 
 Select Python code in the editor, run **Visualize Algorithm**, and get an AI-generated interactive step-by-step debugger in a docked tool window on the right. As you step through frames, the corresponding source line is highlighted in the editor.
