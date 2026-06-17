@@ -2,7 +2,7 @@
   "name": "algo-visualizer-cursor",
   "displayName": "Algorithm Visualizer for Cursor",
   "description": "AI-powered step-by-step algorithm visualizer for Cursor. Select Python code → instant interactive debugger in a side panel with editor cursor sync.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "aerrami",
   "engines": { "vscode": "^1.85.0" },
   "repository": {

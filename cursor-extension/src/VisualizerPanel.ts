@@ -137,7 +137,7 @@ export class VisualizerPanel {
       const prompt = buildPrompt(code, hint);
       const body = JSON.stringify({
         model,
-        max_tokens: 8192,
+        max_tokens: 16384,
         messages: [{ role: 'user', content: prompt }]
       });
 
