@@ -1,5 +1,11 @@
 # Algorithm Visualizer — VS Code / Cursor Extension
 
+> **Status: paused.** This build is not currently being developed or maintained.
+> Active work is happening in [`cursor-extension/`](../cursor-extension/), which
+> was forked from this directory and now carries the source of truth for
+> `promptBuilder.ts`. The code below remains the reference VS Code packaging
+> for whoever picks the vanilla VS Code build back up.
+
 AI-powered step-by-step algorithm debugger. Select Python code → instant interactive visualization in a side panel, with **live editor cursor sync**.
 
 ---
